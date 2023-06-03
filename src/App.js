@@ -1,23 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
-
+import SReactTable from './Components/SReactTable';
+import {useEffect, useState} from 'react'
 function App() {
+  const [tableData, setTableData] = useState(null)
+  useEffect(() => {
+    let fetchData = async () => { 
+      let tableData = JSON.parse(sessionStorage.getItem("tableData"));
+      if(!tableData) {
+        let res = await fetch('https://s3-ap-southeast-1.amazonaws.com/he-public-data/reciped9d7b8c.json')
+        let resJson = await res.json();
+        setTableData(resJson)
+      } else {
+        setTableData(tableData)
+      }
+    }
+    fetchData()
+  },[])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {tableData ? <SReactTable tableData={tableData}/>: <h1>Loading...</h1>}
     </div>
   );
 }
